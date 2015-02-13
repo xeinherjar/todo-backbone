@@ -1,3 +1,12 @@
-## Yo, I'm a Readme
+## Homework 018
 
-You should probably update me so people looking at your code have an idea what it is being used for :)
+First exposure to Backbone.
+Todo App.
+
+checkout
+`npm install`
+`bower install`
+gulp build
+
+
+License: MIT
