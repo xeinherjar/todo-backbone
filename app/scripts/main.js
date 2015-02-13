@@ -60,6 +60,7 @@ todos.on({
     var tmp = e.get('complete');
     metadata.set('complete', tmp ? 
         metadata.get('complete') + 1 : metadata.get('complete') - 1);
+    e.save({ complete: tmp });
     render();
   },
   'change:removed': function(e) {
@@ -67,9 +68,18 @@ todos.on({
      if(e.get('complete')) {
        metadata.set('complete', metadata.get('complete') -1); 
      }
+     e.save({ removed: true });
      render();
   },
-  'sync': function() {
+  'sync': function(e) {
+    var total = 0,
+        complete = 0;
+    e.models.forEach(function(td) {
+      if (td.get('complete')) { complete += 1; }
+      if (!td.get('removed')) { total += 1; }
+    });
+    metadata.set('total', total);
+    metadata.set('complete', complete);
     render();
   }
 });
@@ -92,16 +102,19 @@ todoForm.on('keydown', 'input', function(e) {
 });
 
 todoList.on('click', 'li', function(e) {
-  todos.get(e.target.id).toggleComplete();
+  var td = todos.get(e.target.id);
+  td.toggleComplete();
 });
 
 todoList.on('click', 'span', function(e) {
-  todos.get($(this).parent()[0].id).remove();
+  var td = todos.get($(this).parent()[0].id);
+  td.remove();
   e.stopPropagation();
 });
 
 
 
+// Page-Functions
 var render = function() {
     var html = '';
     todos.each( function(t) {
@@ -116,3 +129,12 @@ var render = function() {
     html += metadataTemplate(metadata.attributes);
     todoList.html(html);
 };
+
+
+
+
+
+
+
+// Onload
+todos.fetch();
